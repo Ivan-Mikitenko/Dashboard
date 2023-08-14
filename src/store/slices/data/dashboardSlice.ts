@@ -40,10 +40,6 @@ const dashboardSlice = createSlice({
 				column.tasks.push(task);
 			}
 		},
-		setChangeTitle: (state, action: PayloadAction<{ index: number; title: string }>) => {
-			const { index, title } = action.payload;
-			state.boards[state.activeBoard].columns[index].title = title;
-		},
 		setDoneSubtask: (
 			state,
 			action: PayloadAction<{
@@ -59,7 +55,8 @@ const dashboardSlice = createSlice({
 			if (task && task.subtasks) {
 				task.subtasks[subIndex].done = done;
 			}
-		}
+		},
+		addSubtask: (state, action) => {}
 	}
 });
 

@@ -5,14 +5,14 @@ import Typography from '@mui/material/Typography';
 import { Fade } from '../ui/Fade.tsx';
 import { useState } from 'react';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
-import Button from '@mui/material/Button';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import CardTask from '../CardTask/CardTask.tsx';
 import { SubtaskType } from '../../types/taskType.ts';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/store.ts';
 
-function CardTaskDetails({ ColumnIndex, ...item }) {
+function CardTaskDetails({ columnIndex, idTask, ...item }) {
 	const [open, setOpen] = useState(false);
+	const { boards, activeBoard } = useSelector((store: RootState) => store.dashboard);
 	const dispatch = useDispatch();
 
 	return (
@@ -47,9 +47,10 @@ function CardTaskDetails({ ColumnIndex, ...item }) {
 							id='spring-modal-title'
 							variant='h4'
 							component='h2'
-							sx={{ fontWeight: 'bold', mb: 2 }}>
+							sx={{ fontWeight: 'bold', mb: 1 }}>
 							{item.title}
 						</Typography>
+						<Typography id='parent-modal-description'>{item.description}</Typography>
 						<Box
 							component='form'
 							sx={{
@@ -87,22 +88,6 @@ function CardTaskDetails({ ColumnIndex, ...item }) {
 									/>
 								))}
 							</FormGroup>
-
-							<Box>
-								<Button
-									variant='contained'
-									size='large'
-									startIcon={<PlaylistAddIcon />}
-									sx={{
-										borderRadius: '20px',
-										mt: 2,
-										mb: 6,
-										width: '100%',
-										backgroundColor: theme => theme.palette.primary.dark
-									}}>
-									Add subtask
-								</Button>
-							</Box>
 						</Box>
 					</Box>
 				</Fade>

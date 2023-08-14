@@ -3,8 +3,7 @@ import Typography from '@mui/material/Typography';
 import CircleIcon from '@mui/icons-material/Circle';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store.ts';
-import { ChangeEvent, useState, KeyboardEvent } from 'react';
-import { setChangeTitle } from '../../store/slices/data/dashboardSlice.ts';
+import { useState } from 'react';
 import { TextField } from '@mui/material';
 import CardTaskDetails from '../CardTaskDetails/CardTaskDetails.tsx';
 
@@ -20,29 +19,9 @@ function DashboardColumn({ titleColumn, quantities, index }: DashboardColumn) {
 
 	const dispatch = useDispatch();
 	const [isEditing, setIsEditing] = useState(false);
-	const [editedTitle, setEditedTitle] = useState(titleColumn);
 
 	const handleTitleClick = () => {
 		setIsEditing(true);
-	};
-
-	const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setEditedTitle(e.target.value);
-	};
-
-	const handleTitleBlur = () => {
-		setIsEditing(false);
-
-		if (titleColumn !== editedTitle) {
-			dispatch(setChangeTitle({ index, title: editedTitle }));
-		}
-	};
-
-	const handleKeyDown = (event: KeyboardEvent) => {
-		if (event.keyCode === 13) {
-			dispatch(setChangeTitle({ index, title: editedTitle }));
-			setIsEditing(false);
-		}
 	};
 
 	return (
@@ -51,10 +30,7 @@ function DashboardColumn({ titleColumn, quantities, index }: DashboardColumn) {
 				<CircleIcon sx={{ mt: '4px' }} color='warning' />
 				{isEditing ? (
 					<TextField
-						value={editedTitle}
-						onChange={handleTitleChange}
-						onBlur={handleTitleBlur}
-						onKeyDown={handleKeyDown}
+						value={titleColumn}
 						autoFocus
 						id='standard-basic'
 						variant='standard'
@@ -66,12 +42,14 @@ function DashboardColumn({ titleColumn, quantities, index }: DashboardColumn) {
 						fontWeight='500'
 						sx={{ mb: 2, cursor: 'pointer', width: '100%' }}
 						onClick={handleTitleClick}>
-						{`${editedTitle} (${quantities})`}
+						{`${titleColumn} (${quantities})`}
 					</Typography>
 				)}
 			</Box>
 			<Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-				{tasks?.map(item => <CardTaskDetails key={item.idTask} {...item} ColumnIndex={index} />)}
+				{tasks?.map(item => (
+					<CardTaskDetails key={item.idTask} {...item} columnIndex={index} idTask={item.idTask} />
+				))}
 			</Box>
 		</Box>
 	);
