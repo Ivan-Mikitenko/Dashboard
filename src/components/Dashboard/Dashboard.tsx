@@ -6,7 +6,12 @@ import DashboardNun from '../DashboardNun/DashboardNun.tsx';
 import { RootState } from '../../store/store.ts';
 
 function Dashboard() {
-	const { boards, activeBoard } = useSelector((store: RootState) => store.dashboard);
+	const { boards, columns, activeBoard } = useSelector((store: RootState) => store.dashboard);
+	const arrBoards = Object.values(boards);
+	const activeColumns = arrBoards[activeBoard].columns;
+	const activeColumnsObjects = Object.values(columns).filter(item =>
+		activeColumns.includes(item.id)
+	);
 
 	return (
 		<Box
@@ -17,21 +22,21 @@ function Dashboard() {
 				p: 2,
 				overflowX: 'scroll',
 				background: 'rgb(241 245 249/1)',
-				...(boards.length === 0 && {
+				...(activeColumns.length === 0 && {
 					justifyContent: 'center',
 					alignItems: 'center'
 				})
 			}}>
-			{boards.length === 0 ? (
+			{activeColumns.length === 0 ? (
 				<DashboardNun />
 			) : (
 				<>
-					{boards[activeBoard].columns.map((item, index) => (
+					{activeColumnsObjects.map(item => (
 						<DashboardColumn
-							key={index}
-							titleColumn={item.title}
-							quantities={item.tasks?.length || 0}
-							index={index}
+							key={item.id}
+							title={item.title}
+							activeTasks={item.tasks}
+							id={item.id}
 						/>
 					))}
 					<AddColumn />

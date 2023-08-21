@@ -3,21 +3,34 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import { Fade } from '../ui/Fade.tsx';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import CardTask from '../CardTask/CardTask.tsx';
-import { SubtaskType } from '../../types/taskType.ts';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store.ts';
 
-function CardTaskDetails({ columnIndex, idTask, ...item }) {
+type CardTaskDetailsType = {
+	title: string;
+	description: string;
+	subtasksId: number[];
+	id: number;
+};
+
+function CardTaskDetails({ title, description, subtasksId, id }: CardTaskDetailsType) {
 	const [open, setOpen] = useState(false);
-	const { boards, activeBoard } = useSelector((store: RootState) => store.dashboard);
-	const dispatch = useDispatch();
+	const { subtasks } = useSelector((store: RootState) => store.dashboard);
+	const arrSubtasks = Object.values(subtasks);
+	const subtasksObject = arrSubtasks.filter(item => subtasksId.includes(item.id));
 
 	return (
 		<Box sx={{ width: '100%' }}>
-			<CardTask {...item} onClick={() => setOpen(!open)} />
+			<CardTask
+				subtasks={subtasksObject}
+				title={title}
+				description={description}
+				onClick={() => setOpen(!open)}
+				id={id}
+			/>
 			<Modal
 				aria-labelledby='spring-modal-title'
 				aria-describedby='spring-modal-description'
@@ -48,9 +61,9 @@ function CardTaskDetails({ columnIndex, idTask, ...item }) {
 							variant='h4'
 							component='h2'
 							sx={{ fontWeight: 'bold', mb: 1 }}>
-							{item.title}
+							{title}
 						</Typography>
-						<Typography id='parent-modal-description'>{item.description}</Typography>
+						<Typography id='parent-modal-description'>{description}</Typography>
 						<Box
 							component='form'
 							sx={{
@@ -67,13 +80,15 @@ function CardTaskDetails({ columnIndex, idTask, ...item }) {
 								Subtasks
 							</Typography>
 							<FormGroup>
-								{item.subtasks?.map((item: SubtaskType, index: number) => (
+								{subtasksObject.map((item, index: number) => (
 									<FormControlLabel
-										onClick={() => console.log('ok')}
 										key={index}
 										label={item.title}
 										control={
 											<Checkbox
+												onClick={event => {
+													event.stopPropagation();
+												}}
 												checked={item.done}
 												color='success'
 												sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
@@ -96,4 +111,5 @@ function CardTaskDetails({ columnIndex, idTask, ...item }) {
 	);
 }
 
-export default CardTaskDetails;
+const CardTaskDetailsMemo = memo(CardTaskDetails);
+export default CardTaskDetailsMemo;

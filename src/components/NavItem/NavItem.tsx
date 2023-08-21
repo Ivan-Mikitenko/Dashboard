@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 type NavItemType = {
 	title: string;
 	onClick: () => void;
-	variant: string;
+	variant: 'text' | 'outlined' | 'contained';
 };
 
 function NavItem({ title, onClick, variant }: NavItemType) {
@@ -23,13 +23,9 @@ function NavItem({ title, onClick, variant }: NavItemType) {
 				borderBottomLeftRadius: '0',
 				py: 2
 			}}>
-			<Typography sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-				{title}
-			</Typography>
+			<Typography sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</Typography>
 		</Button>
 	);
 }
 
 export default NavItem;
-
-// TS2304: Cannot find name 'DeleteIcon'.

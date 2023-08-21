@@ -1,5 +1,9 @@
-import { ArrColumnType } from './columnType.ts';
+export type Boards = {
+	[id: number]: BoardType;
+};
 
-export type BoardType = { title: string; columns: ArrColumnType };
-
-export type ArrBoardType = BoardType[];
+export type BoardType = {
+	id: number;
+	title: string;
+	columns: number[];
+};

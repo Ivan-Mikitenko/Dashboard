@@ -3,21 +3,23 @@ import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 
 type ColumnType = {
-	onChange: (value: string) => void;
+	onChange: (value: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
 	value: string;
 	disabled: boolean;
 	onRemove: () => void;
 	columnTitle?: string;
 };
 
-function Column({ onChange, value, disabled, onRemove, columnTitle = 'Column' }: ColumnType) {
+function Column({ onChange, value, disabled, columnTitle = 'Column', onRemove }: ColumnType) {
 	return (
 		<Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 			<TextField
 				id='outlined-required'
 				label={columnTitle}
 				sx={{ width: '100%' }}
-				onChange={e => onChange(e.target.value)}
+				onChange={event => {
+					onChange(event);
+				}}
 				value={value}
 			/>
 			<IconButton

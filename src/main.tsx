@@ -4,9 +4,6 @@ import App from './App.tsx';
 import { Provider } from 'react-redux';
 import store from './store/store.ts';
 
-// баги
-//TODO: отчищать формы после создания board
-
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	<React.StrictMode>
 		<Provider store={store}>

@@ -1,7 +1,7 @@
-export type Columns = {
+export type Subtasks = {
 	[id: number]: {
 		id: number;
+		done: boolean;
 		title: string;
-		tasks: number[];
 	};
 };

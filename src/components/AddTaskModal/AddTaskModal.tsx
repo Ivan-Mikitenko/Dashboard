@@ -8,30 +8,25 @@ import { TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import Column from '../ui/Column.tsx';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import AddTaskButton from './AddTaskButton.tsx';
 import PlusOneIcon from '@mui/icons-material/PlusOne';
 import BasicSelect from '../Select/BasicSelect.tsx';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { setNewTask } from '../../store/slices/data/dashboardSlice.ts';
 import { RootState } from '../../store/store.ts';
+import { ArrSubtaskType } from '../../types/taskType.ts';
 
 type DashboardsType = {
 	title: string;
 	description: string;
 	idTask: string;
-	subtasks?: {
-		done: boolean;
-		title: string;
-	}[];
+	subtasks?: ArrSubtaskType;
 };
 
-// TODO: при размонтирование обнулять inputs
 function AddTaskModal() {
 	const { boards, activeBoard } = useSelector((store: RootState) => store.dashboard);
 	const [open, setOpen] = useState(false);
 	const [status, setStatus] = useState(0);
-	const dispatch = useDispatch();
 	const initialTitle = boards[activeBoard]?.columns[status]?.title || '';
 
 	const handleChange = (event: SelectChangeEvent) => {
@@ -47,7 +42,7 @@ function AddTaskModal() {
 		idTask: initialTitle,
 		title: '',
 		description: '',
-		subtasks: [{ title: 'Открыть бизнес', done: false }]
+		subtasks: [{ title: '', done: false }]
 	});
 
 	const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -196,7 +191,12 @@ function AddTaskModal() {
 									}}
 									onClick={() => {
 										setOpen(!open);
-										dispatch(setNewTask({ task: value, columnId: status }));
+										setValue({
+											idTask: initialTitle,
+											title: '',
+											description: '',
+											subtasks: [{ title: '', done: false }]
+										});
 									}}>
 									Create new task
 								</Button>

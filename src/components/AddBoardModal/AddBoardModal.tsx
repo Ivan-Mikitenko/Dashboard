@@ -2,64 +2,54 @@ import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
-import { ChangeEvent, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddBoardItem from '../AddBoardItem/AddBoardItem.tsx';
 import { TextField } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import { useDispatch } from 'react-redux';
-import { setNewBoard } from '../../store/slices/data/dashboardSlice.ts';
 import { Fade } from '../ui/Fade.tsx';
 import Column from '../ui/Column.tsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/store.ts';
 import { BoardType } from '../../types/boardType.ts';
+import { addBoard, addColumn } from '../../store/slices/dashboardSlice.ts';
 
-// TODO: при размонтирование обнулять inputs
 function AddBoardModal() {
-	const [id, setId] = useState(3);
-	const [open, setOpen] = useState(false);
+	const { boards, columns } = useSelector((store: RootState) => store.dashboard);
 	const dispatch = useDispatch();
+	const [shouldAddBoard, setShouldAddBoard] = useState(false);
+	const [open, setOpen] = useState(false);
+	const [maxIdColumn, setMaxIdColumn] = useState(
+		Math.max(...Object.values(columns).map(column => column.id)) + 1
+	);
+	const maxIdBoard = Math.max(...Object.keys(boards).map(Number));
 
-	const [value, setValue] = useState<BoardType>({
+	const [valueColumns, setValueColumns] = useState([{ id: maxIdColumn, title: '', tasks: [] }]);
+	const [valueBoard, setValueBoard] = useState<BoardType>({
+		id: maxIdBoard + 1,
 		title: '',
-		columns: [{ id: 1, title: 'Todo' }]
+		columns: []
 	});
 
-	const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
-		const newTitle = event.target.value;
-		setValue(prevValue => ({ ...prevValue, title: newTitle }));
-	};
+	useEffect(() => {
+		if (shouldAddBoard) {
+			dispatch(addBoard(valueBoard));
+			valueColumns.forEach(column => {
+				dispatch(addColumn(column));
+			});
+			setValueBoard({
+				id: maxIdBoard + 1,
+				title: '',
+				columns: []
+			});
+			setValueColumns([{ id: maxIdColumn, title: '', tasks: [] }]);
+			setShouldAddBoard(false); // Сбросьте флаг после отправки
+		}
+	}, [valueBoard, shouldAddBoard, dispatch, maxIdBoard, maxIdColumn]);
 
-	const handleAddColumn = () => {
-		const newId = id + 1;
-		setId(newId);
-
-		setValue(prevValue => ({
-			...prevValue,
-			columns: [...prevValue.columns, { id: newId, title: '' }]
-		}));
-	};
-
-	const handleRemoveColumn = (index: number) => {
-		setValue(prevValue => {
-			const newColumns = [...prevValue.columns];
-			newColumns.splice(index, 1);
-			return {
-				...prevValue,
-				columns: newColumns
-			};
-		});
-	};
-
-	const handleColumnValueChange = (index: number, newValue: string) => {
-		setValue(prevValue => {
-			const newColumns = [...prevValue.columns];
-			newColumns[index].title = newValue;
-			return {
-				...prevValue,
-				columns: newColumns
-			};
-		});
+	const handleRemoveColumn = (columnId: number) => {
+		setValueColumns(prevColumns => prevColumns.filter(column => column.id !== columnId));
 	};
 
 	return (
@@ -108,8 +98,10 @@ function AddBoardModal() {
 								required
 								label='Board Name'
 								sx={{ width: '100%', mb: 2 }}
-								value={value.title}
-								onChange={handleTitleChange}
+								value={valueBoard.title}
+								onChange={event =>
+									setValueBoard(prevValue => ({ ...prevValue, title: event.target.value }))
+								}
 							/>
 
 							<Typography
@@ -122,13 +114,17 @@ function AddBoardModal() {
 							</Typography>
 
 							{/*BOARDS*/}
-							{value.columns.map((item, index) => (
+							{valueColumns.map((item, index) => (
 								<Column
-									disabled={value.columns.length === 1}
-									key={index}
+									disabled={valueColumns.length === 1}
+									key={item.id}
 									value={item.title}
-									onChange={newValue => handleColumnValueChange(index, newValue)}
-									onRemove={() => handleRemoveColumn(index)}
+									onChange={event => {
+										const updatedColumns = [...valueColumns];
+										updatedColumns[index].title = event.target.value;
+										setValueColumns(updatedColumns);
+									}}
+									onRemove={() => handleRemoveColumn(item.id)}
 								/>
 							))}
 
@@ -143,19 +139,31 @@ function AddBoardModal() {
 										width: '100%',
 										backgroundColor: theme => theme.palette.primary.dark
 									}}
-									onClick={handleAddColumn}>
+									onClick={() => {
+										setMaxIdColumn(prevState => {
+											const newMaxId = prevState + 1;
+											setValueColumns(prevColumns => [
+												...prevColumns,
+												{ id: newMaxId, title: '', tasks: [] }
+											]);
+											return newMaxId;
+										});
+									}}>
 									Add column
 								</Button>
 
 								<Button
-									disabled={value.title.trim().length === 0}
+									disabled={valueBoard.title.trim().length === 0}
 									variant='contained'
 									size='large'
 									startIcon={<CreateNewFolderIcon />}
 									onClick={() => {
-										dispatch(setNewBoard(value));
+										setValueBoard(prevState => ({
+											...prevState,
+											columns: valueColumns.map(column => column.id)
+										}));
+										setShouldAddBoard(true);
 										setOpen(!open);
-										setValue(() => ({ title: '', columns: [{ id: 1, title: 'Todo' }] }));
 									}}
 									sx={{
 										borderRadius: '30px',

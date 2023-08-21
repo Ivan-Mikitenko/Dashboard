@@ -2,6 +2,8 @@ import Header from '../../components/Header/Header.tsx';
 import Navigation from '../../components/Navigation/Navigation.tsx';
 import Box from '@mui/material/Box';
 import Dashboard from '../../components/Dashboard/Dashboard.tsx';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 
 function Home() {
 	return (
@@ -15,7 +17,10 @@ function Home() {
 			}}>
 			<Navigation />
 			<Header />
-			<Dashboard />
+
+			<DndProvider backend={HTML5Backend}>
+				<Dashboard />
+			</DndProvider>
 		</Box>
 	);
 }
