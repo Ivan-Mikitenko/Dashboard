@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircleIcon from '@mui/icons-material/Circle';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/store.ts';
+import store, { RootState } from '../../store/store.ts';
 import CardTaskDetailsMemo from '../CardTaskDetails/CardTaskDetails.tsx';
 import { useDrop } from 'react-dnd';
 import { addBoard, dndTask } from '../../store/slices/dashboardSlice.ts';
@@ -21,9 +21,9 @@ function DashboardColumn({ title, activeTasks, id }: DashboardColumnType) {
 	const [{ isOver }, dropRef] = useDrop({
 		accept: 'CARD',
 		drop: item => {
-			console.log('Dropped card:', item);
-			console.log('Dropped column:', id, title);
-			dispatch(dndTask({ idTask: item.id, idColumn: id }));
+			console.log('Перетаскиваем из columns:', item.idColumn, 'в columns:', id);
+			dispatch(dndTask({ idTask: item.id, idColumn: id, fromColumn: item.idColumn }));
+			console.log(store.getState().dashboard.columns);
 		},
 		collect: monitor => ({
 			isOver: monitor.isOver()
@@ -60,6 +60,7 @@ function DashboardColumn({ title, activeTasks, id }: DashboardColumnType) {
 						description={item.description}
 						subtasksId={item.subtasks}
 						id={item.idTask}
+						idColumn={id} // Добавьте эту строку
 					/>
 				))}
 			</Box>

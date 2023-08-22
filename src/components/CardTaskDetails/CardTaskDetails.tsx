@@ -14,22 +14,24 @@ type CardTaskDetailsType = {
 	description: string;
 	subtasksId: number[];
 	id: number;
+	idColumn: number;
 };
 
-function CardTaskDetails({ title, description, subtasksId, id }: CardTaskDetailsType) {
+function CardTaskDetails({ title, description, subtasksId, id, idColumn }: CardTaskDetailsType) {
 	const [open, setOpen] = useState(false);
 	const { subtasks } = useSelector((store: RootState) => store.dashboard);
 	const arrSubtasks = Object.values(subtasks);
 	const subtasksObject = arrSubtasks.filter(item => subtasksId.includes(item.id));
 
 	return (
-		<Box sx={{ width: '100%' }}>
+		<Box sx={{ width: '100%', userSelect: 'none' }}>
 			<CardTask
 				subtasks={subtasksObject}
 				title={title}
 				description={description}
 				onClick={() => setOpen(!open)}
 				id={id}
+				idColumn={idColumn}
 			/>
 			<Modal
 				aria-labelledby='spring-modal-title'

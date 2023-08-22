@@ -1,11 +1,15 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AddTaskModal from '../AddTaskModal/AddTaskModal.tsx';
-import { RootState } from '../../store/store.ts';
+import store, { RootState } from '../../store/store.ts';
+import { IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { deleteBoard } from '../../store/slices/dashboardSlice.ts';
 
 function Header() {
 	const { boards, activeBoard } = useSelector((store: RootState) => store.dashboard);
+	const dispatch = useDispatch();
 
 	return (
 		<Box
@@ -37,17 +41,35 @@ function Header() {
 				sx={{
 					display: 'flex',
 					justifyContent: 'space-between',
-					alignItems: 'end',
+					alignItems: 'center',
 					width: '100%',
 					pl: 2
 				}}>
-				<Typography
-					variant='h5'
+				<Box
 					sx={{
-						fontWeight: '500'
+						display: 'flex',
+						justifyContent: 'space-between',
+						alignItems: 'center'
 					}}>
-					{boards[activeBoard]?.title || ''}
-				</Typography>
+					<Typography
+						variant='h5'
+						sx={{
+							fontWeight: '500'
+						}}>
+						{boards[activeBoard]?.title || ''}
+					</Typography>
+					{activeBoard !== null && (
+						<IconButton
+							aria-label='delete'
+							size='large'
+							color='secondary'
+							onClick={() => {
+								dispatch(deleteBoard());
+							}}>
+							<DeleteIcon fontSize='inherit' />
+						</IconButton>
+					)}
+				</Box>
 				<Box sx={{ display: 'flex' }}>
 					<AddTaskModal />
 				</Box>

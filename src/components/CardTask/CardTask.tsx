@@ -1,6 +1,8 @@
 import { Card, CardContent, Typography, CardActionArea } from '@mui/material';
 import { useDrag } from 'react-dnd';
 import { Subtasks } from '../../types/subtaskType.ts';
+import React from 'react';
+import Button from '@mui/material/Button';
 
 type CardTaskType = {
 	title: string;
@@ -8,12 +10,13 @@ type CardTaskType = {
 	subtasks?: Subtasks[];
 	onClick: () => void;
 	id: number;
+	idColumn: number;
 };
 
-function CardTask({ title, description, subtasks, onClick, id }: CardTaskType) {
+function CardTask({ title, description, subtasks, onClick, id, idColumn }: CardTaskType) {
 	const [{ isDragging }, dragRef] = useDrag({
 		type: 'CARD',
-		item: { id: id },
+		item: { id: id, idColumn: idColumn },
 		collect: monitor => ({
 			isDragging: monitor.isDragging()
 		})

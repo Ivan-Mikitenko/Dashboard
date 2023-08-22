@@ -18,10 +18,6 @@ function AddColumn() {
 		column.current = { id: maxIdColumn, title: '', tasks: [] };
 	}, [maxIdColumn]);
 
-	useEffect(() => {
-		console.log(columns);
-	}, [columns]);
-
 	return (
 		<Box
 			onClick={() => {

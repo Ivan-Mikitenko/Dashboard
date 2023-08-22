@@ -3,16 +3,19 @@ import DashboardColumn from '../DashboardColumn/DashboardColumn.tsx';
 import AddColumn from '../AddColumn/AddColumn.tsx';
 import { useSelector } from 'react-redux';
 import DashboardNun from '../DashboardNun/DashboardNun.tsx';
-import { RootState } from '../../store/store.ts';
+import store, { RootState } from '../../store/store.ts';
 
 function Dashboard() {
 	const { boards, columns, activeBoard } = useSelector((store: RootState) => store.dashboard);
 	const arrBoards = Object.values(boards);
-	const activeColumns = arrBoards[activeBoard].columns;
-	const activeColumnsObjects = Object.values(columns).filter(item =>
-		activeColumns.includes(item.id)
+	console.log('active boards', activeBoard);
+	const activeColumns = arrBoards.find(item => item.id === activeBoard)?.columns;
+	console.log('active Columns', activeColumns);
+	const activeColumnsObjects = Object.values(columns).filter(
+		item => activeColumns?.includes(item.id)
 	);
 
+	console.log('board', store.getState().dashboard);
 	return (
 		<Box
 			sx={{
@@ -22,12 +25,12 @@ function Dashboard() {
 				p: 2,
 				overflowX: 'scroll',
 				background: 'rgb(241 245 249/1)',
-				...(activeColumns.length === 0 && {
+				...(activeColumns?.length === 0 && {
 					justifyContent: 'center',
 					alignItems: 'center'
 				})
 			}}>
-			{activeColumns.length === 0 ? (
+			{activeColumns?.length === 0 || activeBoard === null ? (
 				<DashboardNun />
 			) : (
 				<>
